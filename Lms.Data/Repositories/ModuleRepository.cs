@@ -38,6 +38,12 @@ namespace Lms.Data.Repositories
 
         }
 
+        public async Task<Module> GetModuleByTitleAsync(int id, string title)
+        {
+            var query = db.Modules.AsQueryable();
+            return await query.FirstOrDefaultAsync(m => m.Title == title && m.CourseId == id);
+        }
+
         public void Remove(Module removed)
         {
             db.Remove(removed);

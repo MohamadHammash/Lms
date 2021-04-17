@@ -31,9 +31,9 @@ namespace Lms.API.Controllers
 
         // GET: api/Courses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CourseDto>>> GetCoursesAsync()
+        public async Task<ActionResult<IEnumerable<CourseDto>>> GetCoursesAsync(bool includeModules = false)
         {
-            var courses = await uoW.CourseRepository.GetAllCoursesAsync();
+            var courses = await uoW.CourseRepository.GetAllCoursesAsync(includeModules);
 
             var coursesDto = mapper.Map<IEnumerable<CourseDto>>(courses);
             return Ok(coursesDto);
@@ -41,7 +41,7 @@ namespace Lms.API.Controllers
 
         // GET: api/Courses/5
         [HttpGet]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<ActionResult<CourseDto>> GetCourseAsync(int id)
         {
 
@@ -54,7 +54,23 @@ namespace Lms.API.Controllers
             var model = mapper.Map<CourseDto>(course);
 
             return Ok(model);
-        }
+        } 
+        
+        //[HttpGet]
+        //[Route("{id:string}")]
+        //public async Task<ActionResult<CourseDto>> GetCourseAsync(string title)
+        //{
+
+        //    var course = await uoW.CourseRepository.GetCourseByTitleAsync(title);
+
+        //    if (course == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var model = mapper.Map<CourseDto>(course);
+
+        //    return Ok(model);
+        //}
 
        
         [HttpPut("{id}")]
@@ -104,7 +120,7 @@ namespace Lms.API.Controllers
             }
 
         }
-        [HttpPatch]
+        
 
 
 
@@ -125,7 +141,7 @@ namespace Lms.API.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id:int}")]
         public async Task<ActionResult<CourseDto>> PatchCourse(int id, JsonPatchDocument<CourseDto> patchDocument)
         {
             var course = await uoW.CourseRepository.GetCourseAsync(id);
