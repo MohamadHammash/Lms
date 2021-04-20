@@ -15,6 +15,10 @@ using Microsoft.EntityFrameworkCore;
 using Lms.Data.Data;
 using Lms.Data.Repositories;
 using Lms.Core.Repositories;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using System.Reflection;
+using System.IO;
 
 namespace Lms.API
 {
@@ -30,13 +34,30 @@ namespace Lms.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc(opt =>
+            {
+
+                opt.Filters.Add(
+                    new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
+                opt.Filters.Add(
+                    new ProducesResponseTypeAttribute(StatusCodes.Status406NotAcceptable));
+                opt.Filters.Add(
+                    new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+            opt.OutputFormatters.Add(new XmlSerializerOutputFormatter()); // Review! : Adding xml Serilizer to the controllers
+                
+            }
+            );
 
             services.AddControllers(opt => opt.ReturnHttpNotAcceptable = true)
                 .AddNewtonsoftJson()
                 .AddXmlDataContractSerializerFormatters();
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(opt =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Lms.API", Version = "v1" });
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Lms.API", Version = "v1" });
+
+                var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+                opt.IncludeXmlComments(xmlCommentsFullPath); // Review! : Including XMl in the path so we get our API documented.
             });
             services.AddDbContext<LmsAPIContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("LmsAPIContext")));
