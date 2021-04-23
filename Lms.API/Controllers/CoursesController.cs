@@ -45,15 +45,13 @@ namespace Lms.API.Controllers
         /// <summary>
         /// Returns a specific course by id
         /// </summary>
-        /// <description>
-        /// Desc
-        /// </description>
         /// <param name="id"> the course Id</param>
 
         /// <returns>Returns tag </returns>
 
         // GET: api/Courses/5
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Route("{id:int}")]
         public async Task<ActionResult<CourseDto>> GetCourseAsync(int id)
         {
@@ -87,6 +85,8 @@ namespace Lms.API.Controllers
 
        
         [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> PutCourse(int id, CourseDto dto)
         {
             var course = await uoW.CourseRepository.GetCourseAsync(id);
@@ -108,6 +108,7 @@ namespace Lms.API.Controllers
 
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<CourseDto>> CreateCourse(CourseDto dto)
         {
 
